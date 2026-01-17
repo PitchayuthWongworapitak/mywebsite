@@ -1,11 +1,57 @@
 <html>
-    <link rel="stylesheet" href="styles.css" />
-    <title>Awesome Website</title>
-    <h1>Welcome to Bonnitaru's Awesome Website</h1>
+<link rel="stylesheet" href="styles.css" />
+<title>Awesome Website</title>
+<h1>Welcome to Bonnitaru's Awesome Website</h1>
+<h2>Your name is... <span id="username">Anonymous</span></h2>
+<input id="usernameInput" type="text" placeholder="Enter your username..." />
+<button id="setUsernameButton" onclick="setUsername()">Set Username</button>
+<h1>Talk with People:</h1>
+<div id="messages"></div>
 
-    <h1>Talk with People:</h1>
-    <div id="messages"></div>
+<input id="messageInput" type="text" placeholder="Type your message here..." />
+<button id="sendButton">Send</button>
+<script>
+    let hasID = false;
+    let user;
+    function setUserCookie() {
+        if (!document.cookie.includes("userId")) {
+            const userId = crypto.randomUUID();
+            user = { id: userId, username: "Anonymous"};
+            document.cookie = `userId=${userId}; path=/; max-age=${60 * 60 * 24 * 365}`;
+            hasID = true;
+        }
+    }
+    setUserCookie();
 
-    <input id="messageInput" type="text" placeholder="Type your message here..." />
-    <button id="sendButton">Send</button>
+    function getCookie(name) {
+        return document.cookie.split('; ').find(row => row.startsWith(name + '=')).split('=')[1];
+    }
+
+    function sendMessage(){
+        const msg = document.getElementById("messageInput").value;
+        const userId = getCookie("userId");
+
+        if (msg.trim() === "") return;
+
+        const div = document.createElement("div");
+        div.className = "messages";
+        div.innerHTML = `<span class="userId">${userId}:</span> ${msg}`;
+        document.getElementById("messages").appendChild(div);
+
+        document.getElementById("messageInput").value = "";
+    }
+
+    function setUsername(){
+        if(hasID){
+            const username = document.getElementById("usernameInput").value;
+            if(username.trim() === "") return;
+
+            user.username = username;
+            document.getElementById("username").innerText = username;
+        }
+    }
+
+    document.getElementById("sendButton").addEventListener("click", sendMessage);
+</script>
+
 </html>
